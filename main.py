@@ -1,13 +1,18 @@
 import time
 import json
+import bcrypt
 import sqlite3
 import secrets
 import datetime
+import configparser
+from re import *
 from flask import Flask, request, g
 app = Flask(__name__)
+config = configparser.ConfigParser()
+config.read("rtclServer.conf")
 
 def connect_db():
-    rv = sqlite3.connect("test_db_sqlite.db")
+    rv = sqlite3.connect(config.get("server", "urldb"))
     rv.row_factory = sqlite3.Row
     return rv
 
@@ -15,6 +20,14 @@ def get_db():
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
+
+def isAddress(address):
+    pattern = compile('(^|\s)[-a-z0-9_.]+@([-a-z0-9]+\.)+[a-z]{2,6}(\s|$)')
+    is_valid = pattern.match(address)
+    if is_valid:
+        return True
+    else:
+        return False
 
 def isLesson(minStart, minEnd, inMin):
     if minStart <= inMin and minEnd >= inMin:
@@ -40,11 +53,27 @@ def close_db(error):
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return 'It is api bro! Go http://github.com/0RootLoL0'
 
 @app.route('/getTime')
 def getTime():
     return str(int(time.time()))
+
+@app.route('/loginDevice', methods=['GET', 'POST'])
+def loginDevice():
+    if request.method == 'POST':
+        email, password = request.form['email'], request.form['password']
+        if isAddress(email):
+            hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+            if bcrypt.checkpw(password, hashed):
+                print("It Matches!")
+            else:
+                print("It Does not Match :(")
+        else:
+            return json.dumps({"status": "error"})
+
+    else:
+        return 'It is api bro! Go http://github.com/0RootLoL0'
 
 @app.route('/getLesson')
 def getLesson():
@@ -54,21 +83,18 @@ def getLesson():
     
     mess = ""
     db = get_db()
-    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+token+'\';')
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
     entries = cur.fetchall()
     if len(entries) == 1:
         now = datetime.datetime.now()
-        Lesson = getNumLesson(json.loads(entries[0]["schedule_calls"]), 780)
-        
+        Lesson = getNumLesson(json.loads(entries[0]["schedule_calls"]), now.hour*60+now.minute)
         print(Lesson)
-        
         if Lesson["num"] == 0:
             mess = json.dumps({"Lesson": "not started"})
         elif Lesson["num"] == Lesson["count"]:
             mess = json.dumps({"Lesson": "endel"})
         else:
             mess = json.loads(entries[0]["lessons_monday"])[Lesson["num"]]["Lesson"]
-
     return mess
 
 if __name__ == '__main__':
