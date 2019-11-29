@@ -24,18 +24,14 @@ def isLesson(minStart, minEnd, inMin):
 
 def getNumLesson(tables, min):
     Lesson = 0
-    if min < tables[0]["StartMinL"]:
-        return Lesson
-    elif min > tables[len(tables)-1]["StartMinL"]:
-        return len(tables)+1
+    if not min < tables[0]["StartMinL"]:
+        for table in tables:
+            if isLesson(table["StartMinL"], table["EndMinL"] , min):
+                break
+            else:
+                Lesson += 1
 
-    for table in tables:
-        if isLesson(table["StartMinL"], table["EndMinL"] , min):
-            break
-        else:
-            Lesson += 1
-
-    return Lesson
+    return {"count": len(tables), "num": Lesson}
 
 @app.teardown_appcontext
 def close_db(error):
@@ -52,7 +48,7 @@ def getTime():
 
 @app.route('/getLesson')
 def getLesson():
-    token = request.args.get("token")
+    token = request.args.get('token', '')
     if token == "":
         return "{\"status\": \"hui\"}"
     
@@ -62,14 +58,17 @@ def getLesson():
     entries = cur.fetchall()
     if len(entries) == 1:
         now = datetime.datetime.now()
-        Lesson = getNumLesson(json.loads(entries[0]["schedule_calls"]), now.hour*60+now.minute)
+        Lesson = getNumLesson(json.loads(entries[0]["schedule_calls"]), 780)
+        
         print(Lesson)
-        if Lesson == 0:
-            mess = json.dumps({"Lesson": "не начились"})
-        elif Lesson == 8:
-            mess = json.dumps({"Lesson": "кончились"})
+        
+        if Lesson["num"] == 0:
+            mess = json.dumps({"Lesson": "not started"})
+        elif Lesson["num"] == Lesson["count"]:
+            mess = json.dumps({"Lesson": "endel"})
         else:
-            mess = json.loads(entries[0]["lessons_monday"])[Lesson]["Lesson"]
+            mess = json.loads(entries[0]["lessons_monday"])[Lesson["num"]]["Lesson"]
+
     return mess
 
 if __name__ == '__main__':
