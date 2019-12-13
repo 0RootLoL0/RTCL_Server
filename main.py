@@ -59,23 +59,21 @@ def hello_world():
 def getTime():
     return str(int(time.time()))
 
-@app.route('/loginDevice', methods=['GET', 'POST'])
+@app.route('/loginDevice')
 def loginDevice():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        if isAddress(email):
-            db = get_db()
-            cur = db.execute("SELECT \"passwd_hui\",\"token_devices\" FROM \"main\".\"users_rootlolhui\" WHERE \"email\" LIKE \'"+email+"\';")
-            entries = cur.fetchall()
-            if len(entries) > 0:
-                print(bcrypt.checkpw(password.encode("utf-8"), entries[0]["passwd_hui"].encode("utf-8")))
-                if bcrypt.checkpw(password.encode("utf-8"), entries[0]["passwd_hui"].encode("utf-8")):
-                    return entries[0]["token_devices"]
+    email = request.args.get('email', '')
+    password = request.args.get('password', '')
+    print(email, password)
+    if isAddress(email):
+        db = get_db()
+        cur = db.execute("SELECT \"passwd_hui\",\"token_devices\" FROM \"main\".\"users_rootlolhui\" WHERE \"email\" LIKE \'"+email+"\';")
+        entries = cur.fetchall()
+        if len(entries) > 0:
+            print(bcrypt.checkpw(password.encode("utf-8"), entries[0]["passwd_hui"].encode("utf-8")))
+            if bcrypt.checkpw(password.encode("utf-8"), entries[0]["passwd_hui"].encode("utf-8")):
+                return json.dumps({"mess": str(entries[0]["token_devices"])})
 
-        return "post"
-    else:
-        return 'It is api bro! Go http://github.com/0RootLoL0'
+    return json.dumps({"mess": "error"})
 
 @app.route('/getLesson')
 def getLesson():
@@ -101,5 +99,46 @@ def getLesson():
         mess = "you invalid"
     return json.dumps({"mess": str(mess)})
 
+@app.route('/getClass')
+def getClass():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        now = datetime.datetime.now()
+        Lesson = getNumLesson(json.loads(entries[0]["schedule_calls"]), now.hour*60+now.minute)
+        print(Lesson)
+        if Lesson["num"] == 0:
+            mess = json.dumps({"Lesson": "not started"})
+        elif Lesson["num"] == Lesson["count"]:
+            mess = json.dumps({"Lesson": "endel"})
+        else:
+            mess = json.loads(entries[0]["class_monday"])[Lesson["num"]]["class"]
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
+@app.route('/getFIO')
+def getFIO():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        name = entries[0]["name"]
+        lastname = entries[0]["lastname"]
+        mess = name +" "+ lastname
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=5010)
