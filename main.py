@@ -62,16 +62,18 @@ def getTime():
 @app.route('/loginDevice', methods=['GET', 'POST'])
 def loginDevice():
     if request.method == 'POST':
-        email, password = request.form['email'], request.form['password']
+        email = request.form['email']
+        password = request.form['password']
         if isAddress(email):
-            hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-            if bcrypt.checkpw(password, hashed):
-                print("It Matches!")
-            else:
-                print("It Does not Match :(")
-        else:
-            return json.dumps({"status": "error"})
+            db = get_db()
+            cur = db.execute("SELECT \"passwd_hui\",\"token_devices\" FROM \"main\".\"users_rootlolhui\" WHERE \"email\" LIKE \'"+email+"\';")
+            entries = cur.fetchall()
+            if len(entries) > 0:
+                print(bcrypt.checkpw(password.encode("utf-8"), entries[0]["passwd_hui"].encode("utf-8")))
+                if bcrypt.checkpw(password.encode("utf-8"), entries[0]["passwd_hui"].encode("utf-8")):
+                    return entries[0]["token_devices"]
 
+        return "post"
     else:
         return 'It is api bro! Go http://github.com/0RootLoL0'
 
@@ -95,7 +97,9 @@ def getLesson():
             mess = json.dumps({"Lesson": "endel"})
         else:
             mess = json.loads(entries[0]["lessons_monday"])[Lesson["num"]]["Lesson"]
-    return mess
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")

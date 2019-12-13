@@ -1,25 +1,16 @@
-import configparser, json
+import bcrypt
 
-def createConfig(path):
-    config = configparser.ConfigParser()
-    config.add_section("server")
-    config.set("server", "urldb", input())
-    config.set("server", "prefixdb", input())
+pwer = "huina2pisuna"
 
-    with open(path, "w") as config_file:
-        config.write(config_file)
- 
- 
-if __name__ == "__main__":
-    path = "rtclServer.conf"
-    createConfig(path)
+fghj = bcrypt.hashpw(pwer.encode("utf-8"), bcrypt.gensalt(12))
+vbnm = bcrypt.hashpw(b"huina2pisuna", bcrypt.gensalt(12))
 
-"""
-    import configparser
 
-config = configparser.ConfigParser()
-config.read("config.ini")
 
-config.get("Bot", "token")
-    
-"""
+print(fghj.decode("utf-8"))
+print(vbnm)
+
+
+
+print(bcrypt.checkpw(pwer.encode("utf-8"), fghj))
+print(bcrypt.checkpw(pwer.encode("utf-8"), vbnm))
