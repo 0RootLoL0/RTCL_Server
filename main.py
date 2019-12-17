@@ -43,6 +43,8 @@ def getNumLesson(tables, min):
                 break
             else:
                 Lesson += 1
+        Lesson+=1
+    
 
     return {"count": len(tables), "num": Lesson}
 
@@ -90,11 +92,11 @@ def getLesson():
         Lesson = getNumLesson(json.loads(entries[0]["schedule_calls"]), now.hour*60+now.minute)
         print(Lesson)
         if Lesson["num"] == 0:
-            mess = json.dumps({"Lesson": "not started"})
-        elif Lesson["num"] == Lesson["count"]:
-            mess = json.dumps({"Lesson": "endel"})
+            mess = "не началиь"
+        elif Lesson["num"] > Lesson["count"]:
+            mess = "кончились"
         else:
-            mess = json.loads(entries[0]["lessons_monday"])[Lesson["num"]]["Lesson"]
+            mess = json.loads(entries[0]["lessons_monday"])[Lesson["num"]-1]["Lesson"]
     else:
         mess = "you invalid"
     return json.dumps({"mess": str(mess)})
@@ -103,7 +105,7 @@ def getLesson():
 def getClass():
     token = request.args.get('token', '')
     if token == "":
-        return "{\"status\": \"hui\"}"
+        return "{\"mess\": \"hui\"}"
     
     mess = ""
     db = get_db()
@@ -114,11 +116,11 @@ def getClass():
         Lesson = getNumLesson(json.loads(entries[0]["schedule_calls"]), now.hour*60+now.minute)
         print(Lesson)
         if Lesson["num"] == 0:
-            mess = json.dumps({"Lesson": "not started"})
-        elif Lesson["num"] == Lesson["count"]:
-            mess = json.dumps({"Lesson": "endel"})
+            mess = "не началиь"
+        elif Lesson["num"] > Lesson["count"]:
+            mess = "кончились"
         else:
-            mess = json.loads(entries[0]["class_monday"])[Lesson["num"]]["class"]
+            mess = json.loads(entries[0]["class_monday"])[Lesson["num"]-1]["class"]
     else:
         mess = "you invalid"
     return json.dumps({"mess": str(mess)})
@@ -135,7 +137,7 @@ def getFIO():
     if len(entries) == 1:
         name = entries[0]["name"]
         lastname = entries[0]["lastname"]
-        mess = name +" "+ lastname
+        mess = lastname +" "+name
     else:
         mess = "you invalid"
     return json.dumps({"mess": str(mess)})
