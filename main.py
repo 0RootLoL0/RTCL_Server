@@ -188,6 +188,7 @@ def getMessYA():
 @app.route('/addMessInfo')
 def addMessInfo():
     token = request.args.get('token', '')
+    text = request.args.get('messText', '')
     if token == "":
         return "{\"status\": \"hui\"}"
     
@@ -225,6 +226,7 @@ def getMessInfo():
 @app.route('/addMessTrig')
 def addMessTrig():
     token = request.args.get('token', '')
+    text = request.args.get('messText', '')
     if token == "":
         return "{\"status\": \"hui\"}"
     
