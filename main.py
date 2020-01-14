@@ -182,7 +182,7 @@ def getMessYA():
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
 @app.route('/addMessInfo')
-def addMessYA():
+def addMessInfo():
     token = request.args.get('token', '')
     if token == "":
         return "{\"status\": \"hui\"}"
@@ -200,7 +200,7 @@ def addMessYA():
     return json.dumps({"mess": str(mess)})
 
 @app.route('/getMessInfo')
-def getMessYA():
+def getMessInfo():
     token = request.args.get('token', '')
     if token == "":
         return "{\"status\": \"hui\"}"
@@ -217,7 +217,7 @@ def getMessYA():
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
 @app.route('/addMessTrig')
-def addMessYA():
+def addMessTrig():
     token = request.args.get('token', '')
     if token == "":
         return "{\"status\": \"hui\"}"
@@ -234,8 +234,8 @@ def addMessYA():
         mess = "you invalid"
     return json.dumps({"mess": str(mess)})
 
-@app.route('/getMessYA')
-def getMessYA():
+@app.route('/getMessTrig')
+def getMessTrig():
     token = request.args.get('token', '')
     if token == "":
         return "{\"status\": \"hui\"}"
