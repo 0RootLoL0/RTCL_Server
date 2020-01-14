@@ -149,6 +149,8 @@ def getFIO():
 @app.route('/addMessYA')
 def addMessYA():
     token = request.args.get('token', '')
+    text = request.args.get('messText', '')
+
     if token == "":
         return "{\"status\": \"hui\"}"
     
@@ -158,6 +160,8 @@ def addMessYA():
     entries = cur.fetchall()
     if len(entries) == 1:
         db.execute('UPDATE "main"."users_rootlolhui" SET "mess_ya"='+str(entries[0]["mess_ya"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.commit()
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"='+text+' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
         mess = "ok"
     else:
@@ -194,6 +198,8 @@ def addMessInfo():
     if len(entries) == 1:
         db.execute('UPDATE "main"."users_rootlolhui" SET "mess_info"='+str(entries[0]["mess_info"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"='+text+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.commit()
         mess = "ok"
     else:
         mess = "you invalid"
@@ -229,6 +235,8 @@ def addMessTrig():
     if len(entries) == 1:
         db.execute('UPDATE "main"."users_rootlolhui" SET "mess_trig"='+str(entries[0]["mess_trig"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"='+text+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.commit()
         mess = "ok"
     else:
         mess = "you invalid"
@@ -250,6 +258,22 @@ def getMessTrig():
         mess = "you invalid"
     return json.dumps({"mess": str(mess)})
 
+
+@app.route('/getMess')
+def getMess():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        mess = str(entries[0]["mess"])
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5010)
