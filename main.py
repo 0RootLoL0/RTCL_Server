@@ -161,7 +161,7 @@ def addMessYA():
     if len(entries) == 1:
         db.execute('UPDATE "main"."users_rootlolhui" SET "mess_ya"='+str(entries[0]["mess_ya"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
-        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"='+text+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"=\''+text+'\' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
         mess = "ok"
     else:
@@ -199,7 +199,7 @@ def addMessInfo():
     if len(entries) == 1:
         db.execute('UPDATE "main"."users_rootlolhui" SET "mess_info"='+str(entries[0]["mess_info"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
-        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"='+text+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"=\''+text+'\' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
         mess = "ok"
     else:
@@ -237,7 +237,7 @@ def addMessTrig():
     if len(entries) == 1:
         db.execute('UPDATE "main"."users_rootlolhui" SET "mess_trig"='+str(entries[0]["mess_trig"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
-        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"='+text+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess"=\''+text+'\' WHERE "token_clock"=\''+str(int(token))+'\';')
         db.commit()
         mess = "ok"
     else:
