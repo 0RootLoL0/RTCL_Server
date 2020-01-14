@@ -51,6 +51,7 @@ def getNumLesson(tables, min):
 @app.teardown_appcontext
 def close_db(error):
     if hasattr(g, 'sqlite_db'):
+        g.sqlite_db.commit()
         g.sqlite_db.close()
 
 @app.route('/')
@@ -141,6 +142,114 @@ def getFIO():
     else:
         mess = "you invalid"
     return json.dumps({"mess": str(mess)})
+
+
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+@app.route('/addMessYA')
+def addMessYA():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess_ya"='+str(entries[0]["mess_ya"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.commit()
+        mess = "ok"
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
+@app.route('/getMessYA')
+def getMessYA():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        mess = str(entries[0]["mess_ya"])
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+@app.route('/addMessInfo')
+def addMessYA():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess_info"='+str(entries[0]["mess_info"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.commit()
+        mess = "ok"
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
+@app.route('/getMessInfo')
+def getMessYA():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        mess = str(entries[0]["mess_info"])
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+@app.route('/addMessTrig')
+def addMessYA():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        db.execute('UPDATE "main"."users_rootlolhui" SET "mess_trig"='+str(entries[0]["mess_trig"] + 1)+' WHERE "token_clock"=\''+str(int(token))+'\';')
+        db.commit()
+        mess = "ok"
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
+@app.route('/getMessYA')
+def getMessYA():
+    token = request.args.get('token', '')
+    if token == "":
+        return "{\"status\": \"hui\"}"
+    
+    mess = ""
+    db = get_db()
+    cur = db.execute('SELECT * FROM "main"."users_rootlolhui" WHERE "token_clock"=\''+str(int(token))+'\';')
+    entries = cur.fetchall()
+    if len(entries) == 1:
+        mess = str(entries[0]["mess_trig"])
+    else:
+        mess = "you invalid"
+    return json.dumps({"mess": str(mess)})
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5010)
